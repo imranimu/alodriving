@@ -15,23 +15,20 @@
                     <div class="wrap wrap-content">
                         <table class="table table-bordered">
                             <thead>
-                                <tr>
-                                    <!--th scope="col">#SL</th-->
+                                <tr> 
                                     <th scope="col">Courses Name</th>
 									<th scope="col">Total Module</th>
 									<th scope="col">Module Complete</th>
                                     <th scope="col">Courses Progress</th>
                                     <th scope="col">Payment Details</th>
-									<th scope="col">Payment Status</th>
-                                    <!--th scope="col"></th-->
+									<th scope="col">Payment Status</th> 
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (!blank($records))
                                     @php $count = 1; @endphp
                                     @foreach ($records as $val)
-                                        <tr>
-                                            <!--td>{{ $count }}</td-->
+                                        <tr> 
                                             <td>{{ $val->get_course->title }}</td>
 											<td>{{ $val->total_module }}</td>
 											<td>{{ getModuleCompleted($val->course_id) }}</td>
@@ -85,128 +82,33 @@
                             </tbody>
                         </table>
                         
-                        <?php  
-                        
-                        //echo $records[0]->course_id;
-                        //print_r($records); 
-                        //echo $fullcourse;
-                        
-                        
-                        /*$output_array = [];
-                        
-                        foreach ($fullcourse as $item) {
-                            $module_name = $item->module_name;
-                            $lessons = [
-                                'lessons_id' => $item->lessons_id,
-                                'lessons_name' => $item->lessons_name,
-                                'isCompleted' => $item->isCompleted,
-                            ];
-                        
-                            if (!isset($output_array['courses_name'])) {
-                                $output_array['courses_name'] = $item->courses_name;
-                            }
-                        
-                            if (isset($output_array['module'][$module_name])) {
-                                $output_array['module'][$module_name]['lessons'][] = $lessons;
-                            } else {
-                                $output_array['module'][$module_name] = [
-                                    'module_name' => $module_name,
-                                    'lessons' => [$lessons],
-                                ];
-                            }
-                        }
-                        
-                        // Convert the 'module' array to a unique array
-                        $output_array['module'] = array_values($output_array['module']);
-                        
-                        //print_r($output_array);
-                        echo '<pre>';
-                        print_r($output_array); 
-                        echo '</pre>';
-                        
-                        foreach ($output_array['module'] as $module) {
-                            echo "<div class=\"courseWrapper\">";
-                            echo "<h3>{$output_array['courses_name']}</h3>";
-                            echo "<h5>{$module['module_name']}</h5>";
-                            echo "<ul>";
-                                foreach ($module['lessons'] as $lesson) {
-                                    $isCompletedClass = $lesson['isCompleted'] ? ' class="isCompleted"' : 'notCompleted';
-                                    
-                                    echo "<li $isCompletedClass>{$lesson['lessons_name']}</li>";
-                                    
-                                }
-                            echo "</ul>";
-                            echo "</div>";
-                            echo "<hr>";
-                        }*/
-                        
-                        /*if(isset($fullcourse)){
-                            
-                            
-                            
-                            foreach ($fullcourse as $item) {
-                                
-                                $module_name = $item->module_name;
-                                
-                                $lessons = [
-                                    'lessons_id' => $item->lessons_id,
-                                    'lessons_name' => $item->lessons_name,
-                                    'isCompleted' => $item->isCompleted,
-                                ];
-                            
-                                if (isset($output_array['courses_name'])) {
-                                    $output_array['courses_name'] = $item->courses_name;
-                                }
-                            
-                                if (isset($output_array['module'][$module_name])) {
-                                    $output_array['module'][$module_name]['lessons'][] = $lessons;
-                                } else {
-                                    $output_array['module'][$module_name] = [
-                                        'module_name' => $module_name,
-                                        'lessons' => [$lessons],
-                                    ];
-                                } 
-                            }
-                            
-                            $output_array['module'] = array_values($output_array['module']); 
-                             
-                             if (isset($output_array['courses_name'])) {
-                                    echo "<h3>{$output_array['courses_name']}</h3>";
-                            }
-                             
-                            foreach ($output_array['module'] as $module) {
-                                echo "<div class=\"courseWrapper\">";
-                               
-                               if (!isset($module['module_name'])) {
-                                echo "<h5>{$module['module_name']}</h5>";
-                               }
-                                echo "<ul>";
-                                    foreach ($module['lessons'] as $lesson) {
-                                        $isCompletedClass = $lesson['isCompleted'] ? ' class="isCompleted"' : '';
-                                        
-                                        echo "<li $isCompletedClass>{$lesson['lessons_name']}  ##  {$lesson['isCompleted']}</li>";
-                                        
-                                    }
-                                echo "</ul>";
-                                echo "</div>";
-                                echo "<hr>";
-                            }
-                            
-                        }*/
-                         
-                        /*foreach ($output_array['module'] as $module) {
-                            echo "<h3>{$output_array['courses_name']}</h3>";
-                            echo "<h5>{$module['module_name']}</h5>";
-                            echo "<ul>";
-                            foreach ($module['lessons'] as $lesson) {
-                                $isCompletedClass = $lesson['isCompleted'] ? ' class="isCompleted"' : '';
-                                echo "<li$isCompletedClass>{$lesson['lessons_name']}</li>";
-                            }
-                            echo "</ul>";
-                            echo "<hr>";
-                        }*/
+                        @if (!blank($records)) 
+                            @foreach ($records as $val)
+                                @php
+                                    $completedLesson = getLastCourseLessionCompleted($val->get_course->id);
+                                    //echo $completedLesson;
+                                @endphp
+                                <ul class="text-left">
+                                @foreach (getCoursesModules() as $Module)
+                                    <li>{{ $Module->name }} {{ $Module->id }}  
+                                        @php
+                                            $getModules = getCourseLession($val->get_course->id, $Module->id);
 
-                    ?>
+                                            //echo $getModules; 
+                                        @endphp
+                                        
+                                        @if($getModules)
+                                            <ul>
+                                                @foreach($getModules as $module)
+                                                    <li><i class="fa fa-lock"></i> {{ $module->title }}</li>
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </li>
+                                @endforeach
+                                </ul>
+                            @endforeach
+                        @endif 
                     </div>
                 </div>
             </div>
