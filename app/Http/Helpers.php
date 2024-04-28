@@ -496,6 +496,14 @@ if (!function_exists('getCoursesModuleCount')) {
     }
 }
 
+if (!function_exists('getCoursesModules')) {
+    function getCoursesModules()
+    {
+        $coursesModules = App\Models\admin\CoursesModule::where('status', '1')->whereNull('deleted_at')->get();
+        return $coursesModules;
+    }
+}
+
 if (!function_exists('getCoursesLessonCount')) {
     function getCoursesLessonCount()
     {
