@@ -94,7 +94,27 @@
                                         @php
                                             $getModules = getCourseLession($val->get_course->id, $Module->id);
 
-                                            //echo $getModules; 
+                                            $ids = [];
+                                            foreach ($getModules as $item) {
+                                                $ids[] = $item['module_id'];
+                                            }
+
+                                            // echo $getModules; 
+                                            // $ids = array_map(function($item) {
+                                            //     return $item['id'];
+                                            // }, $getModules); 
+
+                                            // Array_count
+                                            $TotalLession = count($ids);
+
+                                        
+                                            echo $TotalLession;
+                                            
+                                            
+                                            echo '<pre>';
+                                            print_r($ids);
+                                            echo '</pre>';
+
                                         @endphp
                                         
                                         @if($getModules)
