@@ -1,5 +1,5 @@
 <?php
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth; 
 
 if (!function_exists('getSettings')) {
     function getSettings()
@@ -95,6 +95,79 @@ if (!function_exists('getCoursePercetage')) {
 		else :
 			$percentage = 0;
 		endif;
+        return $percentage;
+    }
+}
+
+if (!function_exists('getCourseLessionPercetage')) {
+    /*function getCourseLessionPercetage($course_id, $module_id)
+    {
+        $getModuleHistory = App\Models\admin\CourseModuleHistorie::selectRaw('course_module_histories.courses_id, course_module_histories.module_id, course_module_histories.total_lession, course_module_histories.complete_lession, course_module_histories.examination_status, course_module_histories.status, course_module_histories.created_at, course_module_histories.module_status, courses_modules.name')
+            ->where(['course_module_histories.courses_id' => $course_id, 'course_module_histories.module_id' => $module_id, 'course_module_histories.status' => '1', 'course_module_histories.created_by' => Auth::user()->id])
+            ->leftjoin('courses_modules', function ($q) {
+                $q->on('course_module_histories.module_id', 'courses_modules.id');
+            })
+            ->first();  
+            
+        $course_data = json_decode($getModuleHistory, true); 
+
+
+        $lession_complete =  isset($getModuleHistory) && $getModuleHistory->complete_lession != "" ? count(json_decode($getModuleHistory->complete_lession)) : 0;
+        
+        //$total_lession = isset($getModuleHistory) && $getModuleHistory->total_lession != "" ? count(json_decode($getModuleHistory->total_lession)) : 0;
+        
+        //$result = json_decode($getModuleHistory);
+        
+        if (isset($course_data['total_lession'])) {
+            // Extract total number of lessons and list of completed lessons
+            $total_lessons = $course_data['total_lession'];
+            $completed_lessons = json_decode($course_data['complete_lession']);
+        
+            // Calculate the completed course percentage
+            $completed_percentage = (count($completed_lessons) / $total_lessons) * 100;
+        
+            // Output the result
+            return "Total number of lessons: " . $total_lessons . "\n";
+            //echo "Completed lessons: " . implode(", ", $completed_lessons) . "\n";
+            // echo "Completed course percentage: " . number_format($completed_percentage, 2) . "%\n";
+        } else {
+            return "Error: 'total_lession' key not found in the data.\n";
+        }
+
+        $playerson = (int) preg_replace('/[^0-9]/', '', $lession_complete);
+        $maxplayers = (int) preg_replace('/[^0-9]/', '', $getModuleHistory->total_lession);
+        $percentage = ($playerson / $maxplayers) * 100;
+        $percentage = number_format($percentage, 2);
+        return $percentage;
+    } */
+    
+    function getCourseLessionPercetage($course_id, $module_id)
+    {
+        $moduleHistory = App\Models\admin\CourseModuleHistorie::selectRaw('course_module_histories.courses_id, course_module_histories.module_id, course_module_histories.total_lession, course_module_histories.complete_lession, course_module_histories.examination_status, course_module_histories.status, course_module_histories.created_at, course_module_histories.module_status, courses_modules.name')
+            ->where(['course_module_histories.courses_id' => $course_id, 'course_module_histories.module_id' => $module_id, 'course_module_histories.status' => '1', 'course_module_histories.created_by' => Auth::user()->id])
+            ->leftjoin('courses_modules', function ($q) {
+                $q->on('course_module_histories.module_id', 'courses_modules.id');
+            })
+            ->first();
+    
+        if (!$moduleHistory) {
+            return 0; // Handle case where module history is not found
+        }
+    
+        $totalLessons = isset($moduleHistory->total_lession) ? $moduleHistory->total_lession : 0;
+        $completedLessons = isset($moduleHistory->complete_lession) ? count(json_decode($moduleHistory->complete_lession)) : 0;
+    
+        if ($totalLessons === 0) {
+            return 0; // Avoid division by zero
+        }
+        
+        $percentage = ($completedLessons / $totalLessons) * 100;
+
+        if($percentage > 100){
+            $percentage = 100;
+        }else{
+            $percentage = number_format($percentage, 2);
+        }  
         return $percentage;
     }
 }

@@ -1,6 +1,102 @@
 @extends('layouts.student.layer')
 @section('title', 'Courses Lists | Driving School')
 @section('content')
+
+    <style> 
+        .ModuleView{
+            list-style: none;
+            padding: 0px;
+        }
+        .ModuleView li{
+            border: 1px solid #ccc; 
+            background: #f1f1f1;
+            padding: 7px 14px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            position: relative;
+        } 
+        .ModuleView li:last-child{
+            margin-bottom: 0px;
+        }
+        .ModuleView li.complete {
+            background: rgb(200 242 200);
+            border: 1px solid rgb(157 237 157); 
+        }
+        .ModuleView li.active{
+            background: #EFC45C;
+        }
+        
+        .ModuleView li span.LessonProgress {
+            width: 0%;
+            background: rgb(200 242 200);
+            position: absolute;
+            height: 100%;
+            left: 0;
+            bottom: 0;
+            border-radius: 10px;
+            z-index: 1;
+        }
+        
+        .ModuleView li span.LessonCount{
+            float: right;
+        }
+        
+        .progressBar {
+            width: 100%;
+            height: 30px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        } 
+        .progressBar .progress {
+            width: 0;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .ModuleView li i.fa-spinner{
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        } 
+        
+        .glightbox_video {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 99999;
+        }
+        
+        .outer_circle {
+          stroke-width: 3;
+          stroke-dasharray: 410; 
+           stroke-dashoffset: 0;
+          stroke-linecap: square;
+          transition: all .4s ease-out;
+        }
+        
+        .glightbox_video:hover .outer_circle {
+        stroke-dashoffset:410;
+          transition: stroke .7s .4s ease-out, stroke-dashoffset .4s ease-out
+        }
+        
+        .glightbox_video:hover 
+        .inner-circle {
+          fill: #BF2428;
+          transition:fill .4s .3s ease-out;
+        }
+        
+        .glightbox_video:hover
+        .play{
+            fill: white;
+          transition:fill .4s .3s ease-out;
+        }
+    </style>
     
     <div class="Back">
         <a href="{{ url('student/dashboard') }}" class="btn-11"><i class="fa fa-arrow-left"></i> Back</a>
@@ -13,7 +109,7 @@
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
                     <div class="wrap wrap-content">
-                        <table class="table table-bordered">
+                        <!--table class="table table-bordered">
                             <thead>
                                 <tr> 
                                     <th scope="col">Courses Name</th>
@@ -80,35 +176,119 @@
 									</tr>
                                 @endif
                             </tbody>
-                        </table>
-                        
+                        </table-->
+                         
                         @if (!blank($records)) 
                             @foreach ($records as $val)
                                 @php
                                     $completedLesson = getLastCourseLessionCompleted($val->get_course->id);
-                                    //echo $completedLesson;
+                                    
+                                    $module_status = $completedLesson->module_status;
+                                    
+                                    // echo $completedLesson;
+                                    
+                                    //echo getCourseLessionData($val->get_course->id, $val->get_course->id);
+                                    
+                                    $TotalCompleted = array_map('intval', explode(',', trim($completedLesson->complete_lession, '[]')));
+                                    
+                                    // echo '<pre>';
+                                    // print_r($TotalCompleted);
+                                    // echo '</pre>'; 
+                                    
+                                    $CompletedCount = count($TotalCompleted);  
+                                    
+                                    // echo $CompletedCount; 
+                                    
                                 @endphp
-                                <ul class="text-left">
-                                @foreach (getCoursesModules() as $Module)
-                                    <li>{{ $Module->name }} {{ $Module->id }}  
-                                        @php
-                                            $getModules = getCourseLession($val->get_course->id, $Module->id);
+                                
+                                <!--<div class="progressBar">-->
+                                <!--    <div class="progress" style="width: 50%;"></div>-->
+                                <!--</div>-->
+                                
+                                <!--<a href="#" class="glightbox_video"> -->
+                                <!--    <svg width="131" height="131" viewBox="0 0 131 131" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+                                <!--        <path class="inner-circle" d="M65 21C40.1488 21 20 41.1488 20 66C20 90.8512 40.1488 111 65 111C89.8512 111 110 90.8512 110 66C110 41.1488 89.8512 21 65 21Z" fill="#EFC45C"></path>-->
+                                <!--        <circle class="outer_circle" cx="65.5" cy="65.5" r="64" stroke="#EFC45C"></circle>-->
+                                <!--        <path class="play" fill-rule="evenodd" clip-rule="evenodd" d="M60 76V57L77 66.7774L60 76Z" fill="#BF2428"></path>-->
+                                <!--    </svg>-->
+                                <!--</a>-->
 
-                                            //echo $getModules; 
-                                        @endphp
-                                        
-                                        @if($getModules)
-                                            <ul>
-                                                @foreach($getModules as $module)
-                                                    <li><i class="fa fa-lock"></i> {{ $module->title }}</li>
-                                                @endforeach
-                                            </ul>
+                                
+                                <div class="ActionButton">
+									@if (isset($get_lession_status) && ($get_lession_status->complete_lession == '' || $get_lession_status->complete_lession != '') &&   $get_lession_status->ongoing_lession != '')
+                                        <a class="glightbox_video" href="{{ url('/student/course/' . $get_lession_status->courses_id . '/' . $get_lession_status->module_id . '/' . $get_lession_status->ongoing_lession . '/2') }}" class="btn btn-primary "><svg width="131" height="131" viewBox="0 0 131 131" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path class="inner-circle" d="M65 21C40.1488 21 20 41.1488 20 66C20 90.8512 40.1488 111 65 111C89.8512 111 110 90.8512 110 66C110 41.1488 89.8512 21 65 21Z" fill="#EFC45C"></path>
+                                            <circle class="outer_circle" cx="65.5" cy="65.5" r="64" stroke="#EFC45C"></circle>
+                                            <text class="play" x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="#000" font-size="16" font-family="Arial">START</text>
+                                        </svg>
+                                        </a>
+                                                @elseif (isset($get_lession_status) && $get_lession_status->complete_lession != '' && $get_lession_status->ongoing_lession == '')
+                                                    @php
+                                                        $total_lession = $get_lession_status->complete_lession != '' ? count(json_decode($get_lession_status->complete_lession, true)) : 0;
+                                                    @endphp
+                                                    @if ($total_lession == $get_lession_status->total_lession && $get_lession_status->ongoing_lession == '')
+                                        <a class="glightbox_video" href="{{ url('/student/course/' . $get_lession_status->courses_id . '/' . $get_lession_status->module_id . '/0/2') }}" class="btn btn-primary "><svg width="131" height="131" viewBox="0 0 131 131" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path class="inner-circle" d="M65 21C40.1488 21 20 41.1488 20 66C20 90.8512 40.1488 111 65 111C89.8512 111 110 90.8512 110 66C110 41.1488 89.8512 21 65 21Z" fill="#EFC45C"></path>
+                                            <circle class="outer_circle" cx="65.5" cy="65.5" r="64" stroke="#EFC45C"></circle>
+                                            <text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial">START</text>
+                                        </svg></a>
+                                                    @else
+                                        <a class="glightbox_video" href="{{ url('/student/course/' . $get_lession_status->courses_id . '/' . $get_lession_status->module_id . '/' . $get_lession_status->ongoing_lession . '/2') }}" class="btn btn-primary "><svg width="131" height="131" viewBox="0 0 131 131" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path class="inner-circle" d="M65 21C40.1488 21 20 41.1488 20 66C20 90.8512 40.1488 111 65 111C89.8512 111 110 90.8512 110 66C110 41.1488 89.8512 21 65 21Z" fill="#EFC45C"></path>
+                                            <circle class="outer_circle" cx="65.5" cy="65.5" r="64" stroke="#EFC45C"></circle>
+                                            <text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial">START</text>
+                                        </svg></a>
+                                                    @endif
+                                                @else
+                                                    @if (!blank($lession))
+                                        <a class="glightbox_video" href="{{ url('/student/course/' . $val->course_id . '/' . $val->module_id . '/' . $lession->id . '/2') }}" class="btn btn-primary ">Start</a>
+                                        @else
+                                            -
                                         @endif
-                                    </li>
+                                    @endif
+                                </div>
+                                
+                                <ul class="text-left ModuleView">
+                                @foreach (getCoursesModules() as $Module)
+                                    @php 
+                                        $getResult = getCourseLessionPercetage($val->get_course->id, $Module->id); 
+                                        
+                                        // echo $getResult;
+                                    @endphp
+                                    <li class="@if($module_status  == 1) complete @endif @if( $completedLesson->module_id == $Module->id && $module_status  == 0 ) active @endif" ><p style="position: relative; margin: 0px; z-index: 99;"> 
+                                        @if($module_status  == 1)  <i class="fa fa-unlock"></i> @elseif($completedLesson->module_id == $Module->id) <i class="fa fa-spinner"></i> @elseif ($module_status  == 0) <i class="fa fa-lock"></i> @endif
+                                     {{ $Module->name }} 
+                                    
+                                    @php
+                                        $getLessions = getCourseLession($val->get_course->id, $Module->id);
+
+                                        $ids = [];
+                                        foreach ($getLessions as $item) {
+                                            $ids[] = $item['module_id'];
+                                        }
+                                        
+                                        $TotalLession = count($ids); 
+
+                                        echo '<span class="LessonCount">'  .$TotalLession. ' Pages</span>';
+                                         
+                                    @endphp
+                                    </p>
+                                    <span style="width: @php echo $getResult; @endphp% " class="LessonProgress"></span>
+                                    
+                                    </li> 
+                                    
+                                    <!--@if($getLessions)-->
+                                    <!--    <ul>-->
+                                    <!--        @foreach($getLessions as $module)-->
+                                    <!--            <li><i class="fa fa-lock"></i> {{ $module->title }} {{$module->id}}</li>-->
+                                    <!--        @endforeach-->
+                                    <!--    </ul>-->
+                                    <!--@endif-->
                                 @endforeach
                                 </ul>
                             @endforeach
-                        @endif 
+                        @endif  
+                        
                     </div>
                 </div>
             </div>
