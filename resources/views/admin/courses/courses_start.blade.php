@@ -1,386 +1,418 @@
-@extends('layouts.admin.layer')
-@section('title', 'Course Preview | Driving School')
+@extends('layouts.student.layer')
+@section('title', 'Courses Lists | Driving School')
 @section('content')
 
-    <!-- start page title -->
-    <!--div class="row">
-        <div class="col-12">
-            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0"></h4>
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Pages</a></li>
-                        <li class="breadcrumb-item">Course Preview ></li>
-                        <li class="breadcrumb-item active">{{ !blank($getCourses) ? $getCourses->title : '' }}</li>
-                    </ol>
+    <style> 
+        .ModuleView{
+            list-style: none;
+            padding: 0px;
+        }
+        .ModuleView li{
+            border: 1px solid #ccc; 
+            background: #f1f1f1;
+            padding: 7px 14px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            position: relative;
+        } 
+        .ModuleView li:last-child{
+            margin-bottom: 0px;
+        }
+        .ModuleView li.complete {
+            background: rgb(200 242 200);
+            border: 1px solid rgb(157 237 157); 
+        }
+        .ModuleView li.active{
+            background: #EFC45C;
+        }
+        
+        .ModuleView li span.LessonProgress {
+            width: 0%;
+            background: rgb(200 242 200);
+            position: absolute;
+            height: 100%;
+            left: 0;
+            bottom: 0;
+            border-radius: 10px;
+            z-index: 1;
+        }
+        
+        .ModuleView li span.LessonCount{
+            float: right;
+        }
+        
+        .progressBar {
+            width: 100%;
+            height: 30px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        } 
+        .progressBar .progress {
+            width: 0;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .ModuleView li i.fa-spinner{
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        } 
+        
+        .glightbox_video {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 99999;
+        }
+        
+        .outer_circle {
+          stroke-width: 3;
+          stroke-dasharray: 410; 
+           stroke-dashoffset: 0;
+          stroke-linecap: square;
+          transition: all .4s ease-out;
+        }
+        
+        .glightbox_video:hover .outer_circle {
+        stroke-dashoffset:410;
+          transition: stroke .7s .4s ease-out, stroke-dashoffset .4s ease-out
+        }
+        
+        .glightbox_video:hover 
+        .inner-circle {
+          fill: #BF2428;
+          transition:fill .4s .3s ease-out;
+        }
+        
+        .glightbox_video:hover
+        .play{
+            fill: white;
+          transition:fill .4s .3s ease-out;
+        }
+    </style>
+    
+    <div class="Back">
+        <a href="{{ url('student/dashboard') }}" class="btn-11"><i class="fa fa-arrow-left"></i> Back</a>
+    </div>
+    
+    <!-- course area start -->
+    <div class="course-area pb-5">
+        <div class="container bg-white py-3">
+			<!-- @include('layouts/student/top_navbar') -->
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                    <div class="wrap wrap-content">
+                        <!--table class="table table-bordered">
+                            <thead>
+                                <tr> 
+                                    <th scope="col">Courses Name</th>
+									<th scope="col">Total Module</th>
+									<th scope="col">Module Complete</th>
+                                    <th scope="col">Courses Progress</th>
+                                    <th scope="col">Payment Details</th>
+									<th scope="col">Payment Status</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!blank($records))
+                                    @php $count = 1; @endphp
+                                    @foreach ($records as $val)
+                                        <tr> 
+                                            <td>{{ $val->get_course->title }}</td>
+											<td>{{ $val->total_module }}</td>
+											<td>{{ getModuleCompleted($val->course_id) }}</td>
+                                            <td> 
+                                                {{ getCoursePercetage($val->course_id) }}% 
+                                            </td>
+											<td><a href="javascript:void(0)" class="badge badge-success" onclick="paymentShow({{$val->id}})">History</a></td>
+											<td>
+                                                @if ($val->payment_status == 1 && $val->status == 1)
+                                                    <label class="badge badge-success">Confirm</label>
+                                                @else
+                                                    <label class="badge badge-secondary">Pending</label>
+                                                @endif
+                                            </td>
+											 @php
+												$get_lession_status = getLastCourseLessionCompleted($val->course_id);
+                                                $lession = DB::table('course_lessons')
+                                                    ->where(['course_id' => $val->course_id, 'module_id' => $val->module_id])
+													->whereRaw('deleted_at is null')
+                                                    ->orderBy('id')
+                                                    ->first();
+                                            @endphp
+                                            <td class="ActionButton">
+											@if (isset($get_lession_status) && ($get_lession_status->complete_lession == '' || $get_lession_status->complete_lession != '') &&   $get_lession_status->ongoing_lession != '')
+                                                    <a href="{{ url('/student/course/' . $get_lession_status->courses_id . '/' . $get_lession_status->module_id . '/' . $get_lession_status->ongoing_lession . '/2') }}" class="btn btn-primary ">Start</a>
+                                                @elseif (isset($get_lession_status) && $get_lession_status->complete_lession != '' && $get_lession_status->ongoing_lession == '')
+                                                    @php
+                                                        $total_lession = $get_lession_status->complete_lession != '' ? count(json_decode($get_lession_status->complete_lession, true)) : 0;
+                                                    @endphp
+                                                    @if ($total_lession == $get_lession_status->total_lession && $get_lession_status->ongoing_lession == '')
+                                                        <a href="{{ url('/student/course/' . $get_lession_status->courses_id . '/' . $get_lession_status->module_id . '/0/2') }}" class="btn btn-primary ">Start</a>
+                                                    @else
+                                                        <a href="{{ url('/student/course/' . $get_lession_status->courses_id . '/' . $get_lession_status->module_id . '/' . $get_lession_status->ongoing_lession . '/2') }}" class="btn btn-primary ">Start</a>
+                                                    @endif
+                                                @else
+                                                    @if (!blank($lession))
+                                                        <a href="{{ url('/student/course/' . $val->course_id . '/' . $val->module_id . '/' . $lession->id . '/2') }}" class="btn btn-primary ">Start</a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @php $count++; @endphp
+                                    @endforeach
+								@else
+									<tr>
+										<td colspan="8">No Courses Found!</td>
+									</tr>
+                                @endif
+                            </tbody>
+                        </table-->
+                         
+                        @if (!blank($records)) 
+                            @foreach ($records as $val)
+                                @php
+                                    $completedLesson = getLastCourseLessionCompleted($val->get_course->id);
+                                    
+                                    $module_status = $completedLesson->module_status;
+                                    
+                                    // echo $completedLesson;
+                                    
+                                    //echo getCourseLessionData($val->get_course->id, $val->get_course->id);
+                                    
+                                    $TotalCompleted = array_map('intval', explode(',', trim($completedLesson->complete_lession, '[]')));
+                                    
+                                    // echo '<pre>';
+                                    // print_r($TotalCompleted);
+                                    // echo '</pre>'; 
+                                    
+                                    $CompletedCount = count($TotalCompleted);  
+                                    
+                                    // echo $CompletedCount; 
+                                    
+                                @endphp
+                                
+                                <!--<div class="progressBar">-->
+                                <!--    <div class="progress" style="width: 50%;"></div>-->
+                                <!--</div>-->
+                                
+                                <!--<a href="#" class="glightbox_video"> -->
+                                <!--    <svg width="131" height="131" viewBox="0 0 131 131" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+                                <!--        <path class="inner-circle" d="M65 21C40.1488 21 20 41.1488 20 66C20 90.8512 40.1488 111 65 111C89.8512 111 110 90.8512 110 66C110 41.1488 89.8512 21 65 21Z" fill="#EFC45C"></path>-->
+                                <!--        <circle class="outer_circle" cx="65.5" cy="65.5" r="64" stroke="#EFC45C"></circle>-->
+                                <!--        <path class="play" fill-rule="evenodd" clip-rule="evenodd" d="M60 76V57L77 66.7774L60 76Z" fill="#BF2428"></path>-->
+                                <!--    </svg>-->
+                                <!--</a>-->
+
+                                
+                                <div class="ActionButton">
+									@if (isset($get_lession_status) && ($get_lession_status->complete_lession == '' || $get_lession_status->complete_lession != '') &&   $get_lession_status->ongoing_lession != '')
+                                        <a class="glightbox_video" href="{{ url('/student/course/' . $get_lession_status->courses_id . '/' . $get_lession_status->module_id . '/' . $get_lession_status->ongoing_lession . '/2') }}" class="btn btn-primary "><svg width="131" height="131" viewBox="0 0 131 131" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path class="inner-circle" d="M65 21C40.1488 21 20 41.1488 20 66C20 90.8512 40.1488 111 65 111C89.8512 111 110 90.8512 110 66C110 41.1488 89.8512 21 65 21Z" fill="#EFC45C"></path>
+                                            <circle class="outer_circle" cx="65.5" cy="65.5" r="64" stroke="#EFC45C"></circle>
+                                            <text class="play" x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="#000" font-size="16" font-family="Arial">START</text>
+                                        </svg>
+                                        </a>
+                                                @elseif (isset($get_lession_status) && $get_lession_status->complete_lession != '' && $get_lession_status->ongoing_lession == '')
+                                                    @php
+                                                        $total_lession = $get_lession_status->complete_lession != '' ? count(json_decode($get_lession_status->complete_lession, true)) : 0;
+                                                    @endphp
+                                                    @if ($total_lession == $get_lession_status->total_lession && $get_lession_status->ongoing_lession == '')
+                                        <a class="glightbox_video" href="{{ url('/student/course/' . $get_lession_status->courses_id . '/' . $get_lession_status->module_id . '/0/2') }}" class="btn btn-primary "><svg width="131" height="131" viewBox="0 0 131 131" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path class="inner-circle" d="M65 21C40.1488 21 20 41.1488 20 66C20 90.8512 40.1488 111 65 111C89.8512 111 110 90.8512 110 66C110 41.1488 89.8512 21 65 21Z" fill="#EFC45C"></path>
+                                            <circle class="outer_circle" cx="65.5" cy="65.5" r="64" stroke="#EFC45C"></circle>
+                                            <text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial">START</text>
+                                        </svg></a>
+                                                    @else
+                                        <a class="glightbox_video" href="{{ url('/student/course/' . $get_lession_status->courses_id . '/' . $get_lession_status->module_id . '/' . $get_lession_status->ongoing_lession . '/2') }}" class="btn btn-primary "><svg width="131" height="131" viewBox="0 0 131 131" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path class="inner-circle" d="M65 21C40.1488 21 20 41.1488 20 66C20 90.8512 40.1488 111 65 111C89.8512 111 110 90.8512 110 66C110 41.1488 89.8512 21 65 21Z" fill="#EFC45C"></path>
+                                            <circle class="outer_circle" cx="65.5" cy="65.5" r="64" stroke="#EFC45C"></circle>
+                                            <text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial">START</text>
+                                        </svg></a>
+                                                    @endif
+                                                @else
+                                                    @if (!blank($lession))
+                                        <a class="glightbox_video" href="{{ url('/student/course/' . $val->course_id . '/' . $val->module_id . '/' . $lession->id . '/2') }}" class="btn btn-primary ">Start</a>
+                                        @else
+                                            -
+                                        @endif
+                                    @endif
+                                </div>
+                                
+                                <ul class="text-left ModuleView">
+                                @foreach (getCoursesModules() as $Module)
+                                    @php 
+                                        $getResult = getCourseLessionPercetage($val->get_course->id, $Module->id); 
+                                        
+                                        echo $getResult;
+                                    @endphp
+                                    <li class="@if($module_status  == 1) complete @endif @if( $completedLesson->module_id == $Module->id && $module_status  == 0 ) active @endif" ><p style="position: relative; z-index: 99;"> 
+                                        @if($module_status  == 1)  <i class="fa fa-unlock"></i> @elseif($completedLesson->module_id == $Module->id) <i class="fa fa-spinner"></i> @elseif ($module_status  == 0) <i class="fa fa-lock"></i> @endif
+                                     {{ $Module->name }} 
+                                    
+                                    @php
+                                        $getLessions = getCourseLession($val->get_course->id, $Module->id);
+
+                                        $ids = [];
+                                        foreach ($getLessions as $item) {
+                                            $ids[] = $item['module_id'];
+                                        }
+                                        
+                                        $TotalLession = count($ids); 
+
+                                        echo '<span class="LessonCount">'  .$TotalLession. ' Pages</span>';
+                                         
+                                    @endphp
+                                    </p>
+                                    <span style="width: @php echo $getResult; @endphp% " class="LessonProgress"></span>
+                                    
+                                    </li> 
+                                @endforeach
+                                </ul>
+                            @endforeach
+                        @endif  
+                        
+                    </div>
                 </div>
             </div>
         </div>
-    </div-->
-    <!-- end page title -->
-    
-    <div style="
-            position: absolute;
-            left: 10px;
-            width: 140px;
-            top: 10px;"
-    >
-        <a href="{{ url('admin/course/course-preview') }}" class="btn btn-warning w-100 mb-3"><i class="fa fa-arrow-left"></i>&nbsp;Back</a>
-        
-        <a href="{{ url('admin/dashboard') }}" class="btn btn-warning w-100 mb-3"><i class="fa fa-arrow-left"></i>&nbsp;Dashboard</a>
+		<!-- Modal -->
+        <div class="modal fade" id="addonsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Payment History</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="bodyBox">
 
-    </div>
-    
-    <div style="position: absolute; right: 10px;  width: 140px; top: 10px;"> 
-    
-        <a href="javascript:void(0);" onclick="chooseBook()" class="btn btn-warning w-100 mb-3">Select Chapter</a> 
-        
-        <select class="book_page form-control"
-            style="height:38px !important; background: #f7b84b; color: #fff; border-radius: 50px;"
-            onchange="changeLession(this.value)">
-            <option value="">Select Lession</option>
-            @if (!blank(getCourseLession($course_id, $module_id)))
-                @foreach (getCourseLession($course_id, $module_id) as $lession)
-                    <option value="{{ $lession->id }}"
-                        {{ Request::segment(6) == $lession->id ? 'selected' : '' }}>
-                        {{ $lession->title }}</option>
-                @endforeach
-            @endif
-        </select>
-    </div>
-
-    <!-- course area start -->
-    <div class="course-area" style="padding-top:0px">
-
-        <div class="containers bg-white"> 
-         
-            @php
-                $playerson = (int) preg_replace('/[^0-9]/', '', $lession_complete);
-                $maxplayers = (int) preg_replace('/[^0-9]/', '', $getModuleHistory[0]->total_lession);
-                $percentage = ($playerson / $maxplayers) * 100;
-                $percentage = number_format($percentage, 2);
-            @endphp 
-       
-            <div class="book-page courseContainer" style="margin:0px;padding:0px;">
-                <div class="with_bg_page">
-                    @if (Request::segment(6) == '0' && $forward != '2')
-                        <div class="row">
-                            <a href="{{ url('admin/course/preview/' . Request::segment(4) . '/' . Request::segment(5) . '/' . $next_id . '/2') }}"
-                                class="take_the_test">Lets start <i class="fa fa-arrow-right"></i></a>
-                        </div>
-                    @elseif (Request::segment(6) == 0 && $forward == 2)
-                        @if ($lession_complete == $getModuleHistory[0]->total_lession && $getModuleHistory[0]->module_status == 1)
-                            <div class="row" style="text-align: center; display: block">
-                                <h3>Congratulations</h3>
-                                <p>You have completed the module
-                                <p>
-                            </div>
-                        @endif
-                    @else
-                        @php
-                            $extension = '';
-                            if (isset($getCourseLession->text_pdf)):
-                                $extension = pathinfo(storage_path('files/' . $module_id . '/' . $getCourseLession->text_pdf), PATHINFO_EXTENSION);
-                            endif;
-                        @endphp
-                        @if (isset($getCourseLession->lesson_type) && $getCourseLession->lesson_type == 'video')
-                            <video id="MyVideo" autoplay="" width="100%" controls>
-                                <source
-                                    src="{{ asset('storage/app/public/files/' . $module_id . '/' . $getCourseLession->video) }}"
-                                    type="video/mp4">
-                                Your browser does not support HTML video.
-                            </video>
-                        @elseif (isset($getCourseLession->lesson_type) && $getCourseLession->lesson_type == 'audio')
-                            @if ($getCourseLession->text_pdf != '')
-                                @if (in_array($extension, ['jpeg', 'jpg', 'png']))
-                                    <img src="{{ asset('storage/app/public/files/' . $module_id . '/' . $getCourseLession->text_pdf) }}"
-                                        class="img img-resposive">
-                                @elseif (in_array($extension, ['doc', 'docx']))
-                                    <iframe
-                                        src="https://view.officeapps.live.com/op/view.aspx?src={{ url('storage/app/public/files/' . $module_id . '/' . $getCourseLession->text_pdf) }}"
-                                        frameborder="0" style="width: 100%; min-height: 600px;"></iframe>
-                                @else
-                                    <iframe
-                                        src="{{ asset('storage/app/public/files/' . $module_id . '/' . $getCourseLession->text_pdf) }}"
-                                        width="100%" height="800px">
-                                    </iframe>
-                                @endif
-                            @endif
-                        @elseif (isset($getCourseLession->lesson_type) && $getCourseLession->lesson_type == 'pdf')
-                            @if ($getCourseLession->text_pdf != '')
-                                @if (in_array($extension, ['jpeg', 'jpg', 'png']))
-                                    <img src="{{ asset('storage/app/public/files/' . $module_id . '/' . $getCourseLession->text_pdf) }}"
-                                        class="img img-resposive">
-                                @elseif (in_array($extension, ['doc', 'docx']))
-                                    <iframe
-                                        src="https://view.officeapps.live.com/op/view.aspx?src={{ url('storage/app/public/files/' . $module_id . '/' . $getCourseLession->text_pdf) }}"
-                                        frameborder="0" style="width: 100%; min-height: 600px;"></iframe>
-                                @else
-                                    <iframe
-                                        src="{{ asset('storage/files/' . $module_id . '/' . $getCourseLession->text_pdf) }}"
-                                        width="100%" height="800px">
-                                    </iframe>
-                                @endif
-                            @endif
-                        @endif
-                    @endif
-                </div>
-            </div>
-
-            <div class="modal fade" id="chooseBook" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myModalLabel">Choose Book or a Chapter</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form action="{{ url('admin/course/preview/course-module-change') }}" method="post">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="email">Book:</label>
-                                    <input type="text" class="form-control select_book" name=""
-                                        value="{{ getCourseName($course_id) }}" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Chapter:</label>
-                                    <select name="module_id" class="form-control select_module">
-                                        <option value="">Select</option>
-                                        @if (!blank($getCoursesModule))
-                                            @foreach ($getCoursesModule as $module)
-                                                <option value="{{ $module->id }}"
-                                                    {{ Request::segment(5) == $module->id ? 'selected' : '' }}>
-                                                    {{ $module->name }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </div>
-                                <input type="hidden" value="{{ Request::segment(4) }}" name="courses_id" />
-                                <button type="submit" class="mt-2 btn btn-primary pull-right go_module_btn">Go</button>
-                            </form>
-                            <div style="float:none;clear:both"></div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                aria-label="Close">Close</button>
-                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="FlotingPlayer">
-                <!--<div class="progress" id="percentage"></div> -->
-                
-                 
-                <div class="navigation">
-                    <div class="left-nav">
-                        @php
-                            $previous_id = 0;
-                            if (!blank($previous_record)):
-                                $previous_id = $previous_record->id;
-                            endif;
-                        @endphp
-    
-                        @if (Request::segment(5) == 0 && Request::segment(6) == 2)
-                            <a href="javascript:void(0)" class="btn btn-success btn-zoomed btn-prev ButtonWidth">
-                                <i class="fa fa-arrow-circle-o-left"></i> Previous
-                            </a>
-                        @else
-                            <a href="{{ url('admin/course/preview/' . Request::segment(4) . '/' . Request::segment(5) . '/' . $previous_id . '/1') }}"
-                                class="btn btn-success btn-zoomed btn-prev ButtonWidth">
-                                <i class="fa fa-arrow-circle-o-left"></i> Previous
-                            </a>
-                        @endif
-                    </div>
-
-                    <div class="mid-item controls">
-                        <div class="voice_div">
-                            @php
-                                $audio_disable = '';
-                                if (isset($getCourseLession->lesson_type) && (Request::segment(6) == 0 || $getCourseLession->lesson_type == 'video' || $getCourseLession->audio != '' || $getCourseLession->lesson_type != 'pdf')):
-                                    $audio_disable = 'pointer-events:none';
-                                endif;
-                            @endphp
-                            @if (!blank($getCourseLession) && $getCourseLession->audio != '')
-                                <audio controls="" autoplay="" style="width:100%;margin-top:2px;">
-                                    <source
-                                        src="{{ asset('storage/app/public/files/' . $module_id . '/' . $getCourseLession->audio) }}"
-                                        type="audio/mpeg">
-                                    Your browser does not support the audio element.
-                                </audio>
-                            @else
-                                <audio controls="" autoplay="" style="width:100%;margin-top:2px; {{ $audio_disable }}">
-                                    <source src="#" type="audio/mpeg">
-                                    Your browser does not support the audio element.
-                                </audio>
-                            @endif
-                        </div>
-                         
-                    </div>
-                    <div class="right-nav"> 
-                        @php
-                            $next_id = 0;
-                            if (!blank($next_record)):
-                                $next_id = $next_record->id;
-                            endif;
-                        @endphp
-                        @if (Request::segment(6) == 0 && $forward == 2)
-                            Module completed
-                        @else
-                            <a href="{{ url('admin/course/preview/' . Request::segment(4) . '/' . Request::segment(5) . '/' . $next_id . '/2') }}"
-                                class="btn btn-success pull-right ButtonWidth">
-                                Next&nbsp;<i class="fa fa-arrow-circle-o-right"></i>
-                            </a>
-                        @endif
-                    </div>
-                </div>  
             </div>
         </div>
     </div>
     <style>
-        .container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl{
-            padding: 0px;
-            margin: 0px;
+        .wrap.wrap-content {
+            background: #fff;
+            padding: 22px;
         }
-        .containers{
-            max-width: 1170px;
-            margin: 0 auto;
+
+        .wrap-content h3 {
+            border-bottom: 1px solid #ccc;
+            text-align: left;
+        } 
+        .Back {
+            position: absolute;
+            top: 90px;
+            overflow: hidden;
+            left: 20px;
+            padding: 5px 0;
         }
-        .page-content{
-            padding: 0px;
+
+        .Back a {
+            border: 1px solid #ccc;
+            padding: 8px 15px;
+            border-radius: 40px;
         }
-        .main-content {
-            margin-left: 0;
+
+        .Back a:hover{
+            background: var(--main-color);
+            color: #fff;
         }
-        .footer, .navbar-menu, #page-topbar{
-            display: none;
-        }
-        #MyVideo{
-            max-height: calc(100vh - 150px);
-        }
-        .courseContainer {
-            margin: 0px;
-            padding: 0px;
-            height: calc(100vh - 10px);
-            overflow: auto;
-        }
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .courseContainer::-webkit-scrollbar {
-            display: none;
-        }
-        
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .courseContainer {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;  /* Firefox */
-        }
-        a.take_the_test {
-            background-color: #a61e4d;
-            color: #eee;
-            padding: 15px 25px;
+        body .table td.ActionButton{
+            position: absolute;
             border: none;
-            text-align: center;
-            margin: 15px auto;
-        }
-
-        a.take_the_test:hover {
-            background-color: #d6336c;
-        }
-
-        .course-area {
-            padding: 0px;
-            background: #1253ea;
-            height: 100vh;
-        }
-
-        .courseContainer{
-            background: #1253ea;
-        }
-
-        .mb-3 {
-            margin-bottom: 15px;
-        }
-
-        .col-2,
-        .col-4 {
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        .col-2 {
-            width: 16%;
-        }
-
-        .col-4 {
-            width: 33.333333%;
-        }
-
-        body .btn {
-            border-radius: 10px;
-        }
-
-        .ButtonWidth {
-            width: 100px;
-        }
-        
-        .FlotingPlayer {
-            position: fixed;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 6px 10px 0 rgba(33,51,63,.15);
-            margin-left: auto;
-            margin-right: auto;
-            min-width: 600px;
-            margin-top: auto;
-            background: rgba(250,250,250,0.8);
-            border-top: 1px solid rgba(33,51,63,.1);
-            display: flex;
-            flex-direction: column;
-            bottom: 10px;
             left: 50%;
-            transform: translate(-50%, 0);
+            transform: translate(-50%, 0px);
+            bottom: -50px;
         }
-        .FlotingPlayer .navigation{
-            display: flex;
-            justify-content: space-between;
-            /*min-height: 84px;*/
-            padding: 5px;
-            align-items: center;
+        body .table td.ActionButton a.btn {
+            background: #EFC45C;
+            border-radius: 50px;
+            width: 274px;
+            color: #000;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 16px;
         }
-        .FlotingPlayer .voice_div{
-            width: 350px;
-            height: 35px;
-        }
-
-        .FlotingPlayer .voice_div audio{
-            height: 35px;
+        body .table td.ActionButton a.btn:hover{
+            color: #fff;
         }
     </style>
-    <script>
-        // (function() {
-        // if (window.localStorage) {
-        // if (!localStorage.getItem('firstLoad')) {
-        // localStorage['firstLoad'] = true;
-        // window.location.reload();
-        // } else
-        // localStorage.removeItem('firstLoad');
-        // }
-        // })();
+     
+	<script>
+	function paymentShow(id) {
+		$.ajax({
+			type: 'POST',
+			url: '{{ url('student/payment/get-payment-history') }}',
+			data: {
+				"id": id,
+				"_token": "{{ csrf_token() }}"
+			},
+			success: function(response) {
+				console.log(response);
 
-        function chooseBook() {
-            $('#chooseBook').modal('show');
-        }
+				let html = '';
+				html += '<table class="table table-bordered">' +
+					'<thead>' +
+					'<tr>' +
+					'<th scope="col">Courses Name</th>' +
+					'<th scope="col">Amount</th>' +
+					'<th scope="col">Transaction ID</th>' +
+					'<th scope="col">Purchase Date</th>' +
+					'</tr>' +
+					'</thead>' +
+					'<tbody>'+
+					'<tr>'+
+					'<td>' + response.get_course.title + '</td>' +
+					'<td>' + response.total_amount + '</td>' +
+					'<td>' + response.transaction_id + '</td>' +
+					'<td>' + response.created_at + '</td>' +
+					'</tr>';
+					'</tbody>' +
+				'</table>';
+				html += '<table class="table table-bordered">' +
+					'<thead>' +
+					'<tr>' +
+					'<th scope="col">#SL</th>' +
+					'<th scope="col">Name</th>' +
+					'<th scope="col">Amount</th>' +
+					'<th scope="col">Created at</th>' +
+					'</tr>' +
+					'</thead>' +
+					'<tbody>';
+				'<tr>';
+				if (response.get_addons.length > 0) {
+					for (let i = 0; i < response.get_addons.length; i++) {
+						html += '<th scope="row">' + (i + 1) + '</th>' +
+							'<td>' + response.get_addons[i].name + '</td>' +
+							'<td>' + response.get_addons[i].amount + '</td>' +
+							'<td>' + response.get_addons[i].created_at + '</td>' +
+							'</tr>';
+					}
+				} else {
+					html += '<td colspan="4">No Addons Found!</td></tr>'
+				}
+				html += '</tbody>' +
+					'</table>';
+				$('#bodyBox').html(html);
+				$('#addonsModal').modal('show');
 
-        function changeLession(id) {
-            let lesstionID = {{ Request::segment(5) }};
-            let lessionProgress = 1;
-            if (id > lesstionID) {
-                lessionProgress = 2;
-            }
-            let urlPath = '{{ url('admin/course/preview/' . Request::segment(4) . '/' . Request::segment(5)) }}/' + id +
-                '/' +
-                lessionProgress;
-            window.location.href = urlPath;
-        }
-    </script>
+			}
+		});
+	}
+	</script>
 @endsection
