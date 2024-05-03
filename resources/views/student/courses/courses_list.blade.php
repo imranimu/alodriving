@@ -189,7 +189,7 @@
                                         $module_status = 0;
                                     } 
                                     
-                                    // echo $completedLesson;
+                                    echo $completedLesson;
                                     
                                     //echo getCourseLessionData($val->get_course->id, $val->get_course->id);
                                     
@@ -258,53 +258,52 @@
                                             -
                                         @endif
                                     @endif
-                                </div>
+                                </div> 
+                                
                                 
                                 <ul class="text-left ModuleView">
-                                @foreach (getCoursesModules() as $Module)
-                                    @php 
-                                        $getResult = getCourseLessionPercetage($val->get_course->id, $Module->id); 
-                                        
-                                        // echo $getResult;
-                                    @endphp
-                                    <li class="@if($module_status == 1) complete @elseif(isset($completedLesson) && $completedLesson->module_id == $Module->id && $module_status == 0) active @endif">
-                                    <p style="position: relative; margin: 0px; z-index: 99;">
-                                        @if($module_status == 1)
-                                            <i class="fa fa-unlock"></i>
-                                        @elseif(isset($completedLesson) && $completedLesson->module_id == $Module->id)
-                                            <i class="fa fa-spinner"></i>
-                                        @elseif($module_status == 0)
-                                            <i class="fa fa-lock"></i>
-                                        @endif
-                                        {{ $Module->name }}     
+                                    @foreach (getCoursesModules() as $Module)
+                                        @php 
+                                            $getResult = getCourseLessionPercetage($val->get_course->id, $Module->id); 
+                                            
+                                            // Set the class based on the $getResult value
+                                            $moduleClass = '';
+                                            if ($getResult >= 100) {
+                                                $moduleClass = 'complete';
+                                            } elseif ($getResult > 0 && $getResult < 100) {
+                                                $moduleClass = 'active';
+                                            }
+                                        @endphp
+                                        <li class="{{ $moduleClass }}">
+                                            <p style="position: relative; margin: 0px; z-index: 99;">
+                                                @if($getResult >= 100)
+                                                    <i class="fa fa-unlock"></i>
+                                                @elseif($getResult > 0)
+                                                    <i class="fa fa-spinner"></i>
+                                                @else
+                                                    <i class="fa fa-lock"></i>
+                                                @endif
+                                                {{ $Module->name }}     
+                                            
+                                                @php
+                                                    $getLessions = getCourseLession($val->get_course->id, $Module->id);
                                     
-                                    @php
-                                        $getLessions = getCourseLession($val->get_course->id, $Module->id);
-
-                                        $ids = [];
-                                        foreach ($getLessions as $item) {
-                                            $ids[] = $item['module_id'];
-                                        }
-                                        
-                                        $TotalLession = count($ids); 
-
-                                        echo '<span class="LessonCount">'  .$TotalLession. ' Pages</span>';
-                                         
-                                    @endphp
-                                    </p>
-                                    <span style="width: @php echo $getResult; @endphp% " class="LessonProgress"></span>
+                                                    $ids = [];
+                                                    foreach ($getLessions as $item) {
+                                                        $ids[] = $item['module_id'];
+                                                    }
+                                                    
+                                                    $TotalLession = count($ids); 
                                     
-                                    </li> 
-                                    
-                                    <!--@if($getLessions)-->
-                                    <!--    <ul>-->
-                                    <!--        @foreach($getLessions as $module)-->
-                                    <!--            <li><i class="fa fa-lock"></i> {{ $module->title }} {{$module->id}}</li>-->
-                                    <!--        @endforeach-->
-                                    <!--    </ul>-->
-                                    <!--@endif-->
-                                @endforeach
+                                                    echo '<span class="LessonCount">'  .$TotalLession. ' Pages</span>';
+                                                     
+                                                @endphp
+                                            </p>
+                                            <span style="width: {{ $getResult }}% " class="LessonProgress"></span>
+                                        </li> 
+                                    @endforeach
                                 </ul>
+
                             @endforeach
                         @endif  
                         
