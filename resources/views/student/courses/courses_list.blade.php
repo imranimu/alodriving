@@ -183,13 +183,21 @@
                                 @php
                                     $completedLesson = getLastCourseLessionCompleted($val->get_course->id);
                                     
-                                    $module_status = $completedLesson->module_status;
+                                    if(isset($completedLesson->module_status)){
+                                        $module_status = $completedLesson->module_status;
+                                    }else{
+                                        $module_status = 0;
+                                    } 
                                     
                                     // echo $completedLesson;
                                     
                                     //echo getCourseLessionData($val->get_course->id, $val->get_course->id);
                                     
-                                    $TotalCompleted = array_map('intval', explode(',', trim($completedLesson->complete_lession, '[]')));
+                                    if (isset($completedLesson->complete_lession)) {
+                                        $TotalCompleted = array_map('intval', explode(',', trim($completedLesson->complete_lession, '[]')));
+                                    }else{
+                                        $TotalCompleted = array();
+                                    }
                                     
                                     // echo '<pre>';
                                     // print_r($TotalCompleted);
@@ -241,7 +249,11 @@
                                                     @endif
                                                 @else
                                                     @if (!blank($lession))
-                                        <a class="glightbox_video" href="{{ url('/student/course/' . $val->course_id . '/' . $val->module_id . '/' . $lession->id . '/2') }}" class="btn btn-primary ">Start</a>
+                                        <a class="glightbox_video" href="{{ url('/student/course/' . $val->course_id . '/' . $val->module_id . '/' . $lession->id . '/2') }}" class="btn btn-primary "><svg width="131" height="131" viewBox="0 0 131 131" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path class="inner-circle" d="M65 21C40.1488 21 20 41.1488 20 66C20 90.8512 40.1488 111 65 111C89.8512 111 110 90.8512 110 66C110 41.1488 89.8512 21 65 21Z" fill="#EFC45C"></path>
+                                            <circle class="outer_circle" cx="65.5" cy="65.5" r="64" stroke="#EFC45C"></circle>
+                                            <text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial">START</text>
+                                        </svg></a>
                                         @else
                                             -
                                         @endif
@@ -255,9 +267,16 @@
                                         
                                         // echo $getResult;
                                     @endphp
-                                    <li class="@if($module_status  == 1) complete @endif @if( $completedLesson->module_id == $Module->id && $module_status  == 0 ) active @endif" ><p style="position: relative; margin: 0px; z-index: 99;"> 
-                                        @if($module_status  == 1)  <i class="fa fa-unlock"></i> @elseif($completedLesson->module_id == $Module->id) <i class="fa fa-spinner"></i> @elseif ($module_status  == 0) <i class="fa fa-lock"></i> @endif
-                                     {{ $Module->name }} 
+                                    <li class="@if($module_status == 1) complete @elseif(isset($completedLesson) && $completedLesson->module_id == $Module->id && $module_status == 0) active @endif">
+                                    <p style="position: relative; margin: 0px; z-index: 99;">
+                                        @if($module_status == 1)
+                                            <i class="fa fa-unlock"></i>
+                                        @elseif(isset($completedLesson) && $completedLesson->module_id == $Module->id)
+                                            <i class="fa fa-spinner"></i>
+                                        @elseif($module_status == 0)
+                                            <i class="fa fa-lock"></i>
+                                        @endif
+                                        {{ $Module->name }}     
                                     
                                     @php
                                         $getLessions = getCourseLession($val->get_course->id, $Module->id);
