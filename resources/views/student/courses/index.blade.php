@@ -74,6 +74,27 @@
 							<div class="row" style="text-align: center; display: block">
 								<h3>Congratulations</h3>
 								<p>You have completed the module<p>
+								    @php
+								        
+								        // echo Request::segment(4); 
+								        
+								        //echo $getCoursesModule;
+								        
+								        $arrayData = json_decode($getCoursesModule, true);
+
+                                        $lastElement = end($arrayData);  
+                                        
+                                        //print_r($lastElement);
+                                        
+                                        //echo $lastElement['id'];  
+                                        
+                                        $getNextLesson = getCourseLession($course_id, $lastElement['id']);
+								    
+								        // echo $getNextLesson[0]->id;
+								        
+								    @endphp
+								    
+								<a class="btn btn-warning btn-sm mb-3" href="{{ url('student/course/' . Request::segment(3) . '/' . $lastElement['id'] . '/'.$getNextLesson[0]->id.'/2') }}">Next Module</a>
 							</div>
 						@endif
                     @else
@@ -426,11 +447,11 @@
 
         .course-areas{
             padding: 0px 0 10px;
-            background: #1253ea;
+            background: #0b338b;
         }
 
         .courseContainer{
-            background: #1253ea;
+            background: #0b338b;
         }
 
         body .footer-area{
