@@ -70,33 +70,46 @@
                                 class="take_the_test">Lets start <i class="fa fa-arrow-right"></i></a>
                         </div>
                     @elseif (Request::segment(5) == 0 && $forward == 2)
-						@if ($lession_complete == $getModuleHistory[0]->total_lession && $getModuleHistory[0]->module_status == 1)
-							<div class="row" style="text-align: center; display: block">
-								<h3>Congratulations</h3>
-								<p>You have completed the module<p>
-								    @php
-								        
-								        // echo Request::segment(4); 
-								        
-								        //echo $getCoursesModule;
-								        
-								        $arrayData = json_decode($getCoursesModule, true);
+						@if ($getModuleHistory[0]->module_status == 1)
+							<div class="row pt-5" style="text-align: center; display: block">
+								<h3 >Congratulations</h3>
+								<p class="mb-3">You have completed the module</p>
+							    @php 
+							        
+							         if(isset($ExamList)){
+                                        foreach ($ExamList as $key => $val) { 
+                                            
+                                            if($val->module_id == Request::segment(4)){  
+                                                 @endphp 
+                                                    @if($val->exam_status == '2')
+                                                        <a href="{{ url('/student/view-result/' . $val->exam_id) }}"
+                                                        class="badge badge-success mr-3">View
+                                                        Result</a>
+                                                    @else
+                                                        <a href="{{ url('student/join-exam/' . $val->exam_id) }}"
+                                                            class="btn btn-primary btn-sm mr-3">
+                                                            {{ $val->exam_status == '1' || $val->exam_status == '3' ? 'Retake Exam' : 'Start Exam' }}
+                                                        </a>
+                                                    @endif
+                                                 @php 
+                                                 
+                                            } 
+                                        }
+                                    } 
+							        
+							        $arrayData = json_decode($getCoursesModule, true);
 
-                                        $lastElement = end($arrayData);  
-                                        
-                                        //print_r($lastElement);
-                                        
-                                        //echo $lastElement['id'];  
-                                        
-                                        $getNextLesson = getCourseLession($course_id, $lastElement['id']);
+                                    $lastElement = end($arrayData);   
+                                    
+                                    $getNextLesson = getCourseLession($course_id, $lastElement['id']); 
+							        
+							    @endphp
 								    
-								        // echo $getNextLesson[0]->id;
-								        
-								    @endphp
-								    
-								<a class="btn btn-warning btn-sm mb-3" href="{{ url('student/course/' . Request::segment(3) . '/' . $lastElement['id'] . '/'.$getNextLesson[0]->id.'/2') }}">Next Module</a>
+								<a class="btn btn-warning btn-sm" href="{{ url('student/course/' . Request::segment(3) . '/' . $lastElement['id'] . '/'.$getNextLesson[0]->id.'/2') }}">Next Module</a>
 							</div>
 						@endif
+						
+						
                     @else
 						@php
 							$extension = '';
@@ -254,7 +267,7 @@
                         @endphp
     					@if (Request::segment(5) == 0 && $forward == 2)
                             <a href="{{ url('student/quiz') }}" class="btn btn-success btn-sm pull-right" style="width:100%">
-                                Quize/Test &nbsp;<i class="fa fa-arrow-circle-o-right"></i>
+                                All Exams &nbsp;<i class="fa fa-arrow-circle-o-right"></i>
                             </a>
                         @else
     						@php
@@ -333,6 +346,11 @@
                 },
                 success: function(response) {
                     console.log(response);
+                    
+                    if(response > 100){
+                        response = 100;
+                    } 
+                    
                     let html = '';
                     html +=
                         '<div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:' +
@@ -533,6 +551,13 @@
             padding: 2px 10px;
             border-radius: 18px;
             color: #fff;
+        }
+        a.badge.badge-success{
+            padding: 10px 15px;
+            font-size: 15px;
+            border-radius: 40px;
+            font-weight: 700;
+            line-height: normal;
         }
     </style>
 	 
