@@ -46,7 +46,12 @@ class CoursesController extends Controller
             $lession_status = in_array($lession_id, json_decode($getModuleHistory[0]->complete_lession));
         endif;
         $previous_record = CourseLesson::where('id', '<', $lession_id)->where(['course_id' => $id, 'module_id' => $module_id])->orderBy('id', 'desc')->first();
-        return view('student.courses.index', compact('getModuleHistory', 'getCoursesModule', 'getCourseLession', 'course_id', 'module_id', 'lession_id', 'next_record', 'previous_record', 'forward', 'lession_complete', 'lession_status'));
+        
+        $ExamList = StudentExam::where('student_id', Auth::user()->id)->get();
+        
+        // $ExamList = $sql->paginate($perPage); 
+        
+        return view('student.courses.index', compact('getModuleHistory', 'getCoursesModule', 'getCourseLession', 'course_id', 'module_id', 'lession_id', 'next_record', 'previous_record', 'forward', 'lession_complete', 'lession_status', 'ExamList'));
     }
 	
 	private function getCourseModule($id, $module_id)
