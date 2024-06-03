@@ -489,7 +489,7 @@ if (!function_exists('getExamStart')) {
         // return $course_id;
         $getPreviousExam = App\Models\admin\StudentExam::where(['status' => '1', 'courses_id' => $course_id, 'student_id' => Auth::user()->id])->where('id', '<', $id)->orderBy('id', 'desc')->limit(1)->first();
         
-        return  $getPreviousExam;
+        //return  $getPreviousExam;
         
         $status = false;
         
@@ -502,9 +502,15 @@ if (!function_exists('getExamStart')) {
                 if (($getCurrentExam->exam_status == '0' || $getCurrentExam->exam_status == '3' || $getCurrentExam->exam_status == '1') && $getCurrentExam->completed_at == null) {
                     //$addOnDay = date('Y-m-d', strtotime($getPreviousExam->completed_at . ' +1 day'));
                     //if (date('Y-m-d') >= $addOnDay) {
-                        $status = true;
+                        //$status = true;
                     //}
-                }
+
+                    if($getPreviousExam->exam_status == '2' && $getPreviousExam->completed_at == "") {
+                        $status = true;
+                    }else{
+                        $status = false;
+                    }
+                }   
             }
         } else {
             
@@ -518,6 +524,21 @@ if (!function_exists('getExamStart')) {
 
         return $status;
     }
+}
+
+if (!function_exists('getNextModule')) {
+    function getNextModule($course_id)
+    {
+        //$getNextModule = App\Models\admin\Course::where(['status' => '1'])->where('id', '>', $course_id)->orderBy('id')->first();
+        $getNextModule = App\Models\admin\Course::where('courses.status', '1')
+            ->where('courses.id', '>', $course_id) 
+            ->select('courses.id', 'courses.title')
+            ->orderBy('courses.id', 'asc')
+            ->first();
+ 
+        return $getNextModule;
+    }
+
 }
 
 if (!function_exists('getCoursesCount')) {
@@ -639,13 +660,39 @@ if (!function_exists('getQuestionName')) {
     }
 }
 
-if (!function_exists('getLastCourseLessionCompleted')) {
-    function getLastCourseLessionCompleted($course_id)
+if (!function_exists('getNextModule')) {
+    function getNextModule($course_id, $module_id)
     {
-        $getLastLessionStatus = App\Models\admin\CourseModuleHistorie::where(['status' => '1', 'courses_id' => $course_id, 'created_by' => Auth::user()->id])->limit(1)->orderBy('id', 'desc')->first();
-        if (!empty($getLastLessionStatus)) :
-            return $getLastLessionStatus;
-        endif;
-    }
+         
+        
+        // $current_module = DB::table('courses_modules')
+        // ->where('id', $module_id)
+        // ->where('courses_id', $course_id)
+        // ->first();
+        
+        // return $current_module;
+        
+        $nextModule = DB::table('courses_modules')
+        ->where('courses_id', $course_id)
+        ->where('id', '>', $module_id)
+        ->orderBy('id', 'asc')
+        ->first();
+        
+        if ($nextModule) {
+            // Process the next module
+            
+            $getLession = getCourseLession($course_id, $nextModule->id); 
+            
+            $nextModuleLink = '/course/'.$course_id.'/module/'.$nextModule->id.'/2';
+        
+            return $getLession[0] ? $getLession : 'All Completed';
+            
+            
+        } else {
+            // No next module found
+            return 'All Completed';
+        }
+        
+         
+    } 
 }
-
