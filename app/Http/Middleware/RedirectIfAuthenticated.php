@@ -28,7 +28,7 @@ class RedirectIfAuthenticated
                 $current_time = Carbon::now()->timestamp;
                 $question_expires_at = strtotime(Auth::user()->question_expires_at);
                 if (Auth::user()->is_question_verify == '1' && Auth::user()->question_expires_at != "" && $question_expires_at > $current_time) {
-                    return redirect('student/dashboard');
+                    return redirect('student/course-lists');
                 } else {
                     return redirect('student/login-security-question');
                 }
