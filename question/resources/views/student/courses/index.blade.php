@@ -73,39 +73,7 @@
 						@if ($getModuleHistory[0]->module_status == 1)
 							<div class="row pt-5" style="text-align: center; display: block">
 								<h3 >Congratulations</h3>
-								<p class="mb-3">You have completed the module</p>
-							    @php 
-							        
-							         if(isset($ExamList)){
-                                        foreach ($ExamList as $key => $val) { 
-                                            
-                                            if($val->module_id == Request::segment(4)){  
-                                                 @endphp 
-                                                    @if($val->exam_status == '2')
-                                                        <a href="{{ url('/student/view-result/' . $val->exam_id) }}"
-                                                        class="badge badge-success mr-3">View
-                                                        Result</a>
-                                                    @else
-                                                        <a href="{{ url('student/join-exam/' . $val->exam_id) }}"
-                                                            class="btn btn-primary btn-sm mr-3">
-                                                            {{ $val->exam_status == '1' || $val->exam_status == '3' ? 'Retake Exam' : 'Start Exam' }}
-                                                        </a>
-                                                    @endif
-                                                 @php 
-                                                 
-                                            } 
-                                        }
-                                    } 
-							        
-							        $arrayData = json_decode($getCoursesModule, true);
-
-                                    $lastElement = end($arrayData);   
-                                    
-                                    $getNextLesson = getCourseLession($course_id, $lastElement['id']); 
-							        
-							    @endphp
-								    
-								<a class="btn btn-warning btn-sm" href="{{ url('student/course/' . Request::segment(3) . '/' . $lastElement['id'] . '/'.$getNextLesson[0]->id.'/2') }}">Next Module</a>
+								<p class="mb-3">You have completed the module</p> 
 							</div>
 						@endif
 						
@@ -266,9 +234,52 @@
                             endif;
                         @endphp
     					@if (Request::segment(5) == 0 && $forward == 2)
-                            <a href="{{ url('student/quiz') }}" class="btn btn-success btn-sm pull-right" style="width:100%">
-                                All Exams &nbsp;<i class="fa fa-arrow-circle-o-right"></i>
-                            </a>
+                            <!--<a href="{{ url('student/quiz') }}" class="btn btn-success btn-sm pull-right" style="width:100%">-->
+                            <!--    All Exams &nbsp;<i class="fa fa-arrow-circle-o-right"></i>-->
+                            <!--</a>--> 
+                            
+                            @php
+                                if(isset($ExamList)){  
+                                
+                                    $NoExam = true;
+                                    
+                                    foreach ($ExamList as $key => $val) { 
+                                        
+                                        if($val->module_id == Request::segment(4)){  
+                                             @endphp 
+                                                @if($val->exam_status == '2')
+                                                    <a href="{{ url('/student/view-result/' . $val->exam_id) }}"
+                                                    class="badge badge-success mr-3">View
+                                                    Result</a>
+                                                @else
+                                                    <a href="{{ url('student/join-exam/' . $val->exam_id) }}"
+                                                        class="btn btn-primary btn-sm mr-3">
+                                                        {{ $val->exam_status == '1' || $val->exam_status == '3' ? 'Retake Exam' : 'Start Exam' }}
+                                                    </a>
+                                                @endif
+                                             @php 
+                                            
+                                            $NoExam = false; 
+                                        } 
+                                        
+                                    }
+                                    
+                                    if($NoExam){ 
+							        
+							        $arrayData = json_decode($getCoursesModule, true);
+
+                                    $lastElement = end($arrayData);   
+                                    
+                                    $getNextLesson = getCourseLession($course_id, $lastElement['id']); 
+							        
+							    @endphp
+								    
+								<a class="btn btn-warning btn-sm" href="{{ url('student/course/' . Request::segment(3) . '/' . $lastElement['id'] . '/'.$getNextLesson[0]->id.'/2') }}">Next Module</a>
+								@php
+                                    }
+                                } 
+                                
+                            @endphp
                         @else
     						@php
                                 $next_disabled_class = 'next-disabled';

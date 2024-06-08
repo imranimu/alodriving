@@ -681,18 +681,29 @@ if (!function_exists('getNextModule')) {
         if ($nextModule) {
             // Process the next module
             
-            $getLession = getCourseLession($course_id, $nextModule->id); 
+            $getLesson = getCourseLession($course_id, $nextModule->id);  
             
-            $nextModuleLink = '/course/'.$course_id.'/module/'.$nextModule->id.'/2';
-        
-            return $getLession[0] ? $getLession : 'All Completed';
+            //return $getLesson[0]->id; 
             
+            return [
+                'course_id' => $course_id,
+                'module_id' => $nextModule->id,
+                'lesson_id' => $getLesson[0]->id
+            ];
             
         } else {
             // No next module found
             return 'All Completed';
-        }
-        
-         
+        } 
     } 
+}
+
+if(!function_exists('getReviewLesson')){ 
+    function getReviewLesson($course_id, $module_id)
+    {
+        $getCourseLession = App\Models\admin\CourseLesson::where(['status' => '1', 'course_id' => $course_id, 'module_id' => $module_id])->get();
+        if (!empty($getCourseLession)) :
+            return $getCourseLession;
+        endif;
+    }
 }
