@@ -199,28 +199,14 @@
                                         $TotalCompleted = array();
                                     }
                                     
-                                    // echo '<pre>';
-                                    // print_r($TotalCompleted);
-                                    // echo '</pre>'; 
+                                    
                                     
                                     $CompletedCount = count($TotalCompleted);  
-                                    
-                                    // echo $CompletedCount; 
                                      
-                                    // $getAllModules = getCoursesModules();
-                                    // $currentData = 66;
-                                    
-                                    // $getresult = current(array_filter($getAllModules->toArray(), function($item) use ($currentData) { return $item['id'] == $currentData + 1; }));
-                                    
-                                    
-                                    // print_r( $getresult); 
-                                   
                                     
                                 @endphp
                                 
-                                <!--<div class="progressBar">-->
-                                <!--    <div class="progress" style="width: 50%;"></div>-->
-                                <!--</div>--> 
+                                
                                 
                                 <div class="ActionButton">
 									@if (isset($get_lession_status) && ($get_lession_status->complete_lession == '' || $get_lession_status->complete_lession != '') &&   $get_lession_status->ongoing_lession != '')
