@@ -295,30 +295,7 @@
                     </div>
                 </div>
                                         
-                <!-- <div class="containers">
-                    <div class="row">                      
-                        <div class="col-md-4 voice_div">
-                            @php
-                                $audio_disable = '';
-                                if (isset($getCourseLession->lesson_type) && (Request::segment(5) == 0 || $getCourseLession->lesson_type == 'video' || $getCourseLession->audio != '')):
-                                    $audio_disable = 'pointer-events:none';
-                                endif;
-                            @endphp
-                            @if (!blank($getCourseLession) && $getCourseLession->audio != '')
-                                <audio controls="" id="myAudio" autoplay="" style="width:100%;margin-top:2px;height: 38px;">
-                                    <source src="{{ asset('storage/app/public/files/' . $module_id . '/' . $getCourseLession->audio) }}"
-                                        type="audio/mpeg">
-                                    Your browser does not support the audio element.
-                                </audio>
-                            @else
-                                <audio controls="" autoplay="" style="width:100%;margin-top:2px; {{ $audio_disable }}">
-                                    <source src="#" type="audio/mpeg">
-                                    Your browser does not support the audio element.
-                                </audio>
-                            @endif
-                        </div>                         
-                    </div>
-                </div> -->
+                
             </div>
         </div>
     </div>
