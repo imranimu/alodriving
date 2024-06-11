@@ -167,7 +167,7 @@
                 <div class="progress" id="percentage"></div>
                 <div class="navigation">
                     <div class="left-nav">
-                        <!-- <button class="grit button controls__button-label text stretch iconOnly iconButton primary" data-test="courseflow-back"><span class="icon gritIcon--arrow-left"></span></button> -->
+                        
                         @php
                             $previous_id = 0;
                             if (!blank($previous_record)):
@@ -210,23 +210,10 @@
                                 </audio>
                             @endif
                         </div>
-                        <!-- <div class="controls-btn-wrapper">
-                            <button class="grit button controls__button-label text iconOnly iconButton primary">
-                                <span class="icon gritIcon--skip-back"></span>
-                            </button>
-                            <button class="grit button controls__button-label text iconOnly iconButton primary">
-                                <span class="icon gritIcon--ctrl-play"></span>
-                            </button>
-                            <button class="grit button controls__button-label text iconOnly iconButton primary" disabled="">
-                                <span class="icon gritIcon--skip-forward"></span>
-                            </button>
-                        </div> -->
+                        
                     </div>
                     <div class="right-nav">
-                        <!-- <button class="grit button controls__button-label text stretch iconOnly iconButton primary" data-test="courseflow-forward" id="arrow-next">
-                            <span class="icon gritIcon--arrow-right"></span>
-                        </button> -->
-
+                        
                         @php
                             $next_id = 0;
                             if (!blank($next_record)):
@@ -234,9 +221,7 @@
                             endif;
                         @endphp
     					@if (Request::segment(5) == 0 && $forward == 2)
-                            <!--<a href="{{ url('student/quiz') }}" class="btn btn-success btn-sm pull-right" style="width:100%">-->
-                            <!--    All Exams &nbsp;<i class="fa fa-arrow-circle-o-right"></i>-->
-                            <!--</a>--> 
+                             
                             
                             @php
                                 if(isset($ExamList)){  
