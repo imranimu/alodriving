@@ -21,11 +21,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php 
-                                    // echo "<prev>";
-                                    // print_r($records);
-                                    // echo "</prev>";
-                                ?>
+                                
                                 
                                 @if (!blank($records))
                                     @php $count = 1; @endphp
