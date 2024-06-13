@@ -36,30 +36,7 @@
     <div class="course-areas">
 
         <div class="container py-3">
-            <!-- @include('layouts/student/top_navbar') -->
-            
-            <!--div class="row mb-2">
-                <div class="col-md-2">
-                    <a href="{{ url('student/course-lists') }}" class="btn btn-primary btn-sm"><i class="fa fa-arrow-left"></i>&nbsp;Back</a>
-                </div>
-
-                <div class="col-md-2"><a href="javascript:;" data-toggle="modal" data-target="#chooseBook"
-                    class="btn btn-primary btn-sm">Select Chapter</a>
-                </div>                 
-
-                <div class="col-md-2">
-                    <select class="book_page form-control" style="height:38px !important" onchange="changeLession(this.value)">
-                        <option value="">Select Lession</option>
-                        @if (!blank(getCourseLessionData($course_id, $module_id)))
-                            @foreach (getCourseLessionData($course_id, $module_id) as $lession)
-                                <option value="{{ $lession->id }}"
-                                    {{ Request::segment(5) == $lession->id ? 'selected' : '' }}>
-                                    {{ $lession->title }}</option>
-                            @endforeach
-                        @endif
-                    </select>
-                </div>                 
-            </div -->     
+            <!-- @include('layouts/student/top_navbar') --> 
 
             <div class="book-page courseContainer" style="margin:0px;padding:0px;">
 
