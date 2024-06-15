@@ -72,26 +72,8 @@ class StudentExamController extends Controller
             } else {
                 //echo '1st attempt';
                 $offset = 0;
-            }
-
-            //echo 'Offset - ' . $offset . ' Limit - ' . $limit;
-
-            //$getCourseResult = CoursesResult::where('exam_id', $id)->where('user_id', Auth::user()->id)->first();
-
-            //$query = "SELECT exam_status FROM student_exams WHERE exam_id = :examId AND user_id = :userId";
-
-
-            //$studentExam = DB::select($query, ['exam_id' => $id, 'user_id' => Auth::user()->id]);
-
-            //print_r($studentExam);
-
-            //  echo "<pre>";
-            //  print_r($getCourseResult);
-            //  echo "</pre>";
-
-            //$offset = 0; // Rows 1 to 4 are skipped
-            //$limit = 12;  // Number of rows to retrieve (5 to 8)
-
+            } 
+            
             $getQuestion = QuestionMaster::where('exam_id', $id)
                 ->skip($offset)
                 ->take($limit)
