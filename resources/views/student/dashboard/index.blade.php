@@ -1,52 +1,12 @@
 @extends('layouts.student.layer')
 @section('title', 'Dashboard | Driving School')
-@section('content')
-
-    <!-- <div class="navWrap">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-2"><img src="https://aautodrivingschool.com/assets/frontend/img/logo.png" alt="img"></div>
-
-                <div class="col-md-10">
-                    <div class="studentMenu">
-                        <ul class="list-unstyled">
-                            <li class="active"><a href="{{ url('student/dashboard') }}"><i class="fa fa-home"
-                                        aria-hidden="true"></i> Dashboard</a></li>
-                            <li><a href="{{ url('student/profile') }}"><i class="fa fa-user" aria-hidden="true"></i>
-                                    Profile</a></li>
-                            <li><a href="{{ url('student/course-lists') }}"><i class="fa fa-history"
-                                        aria-hidden="true"></i> Courses</a></li>
-                            <li><a href="javascript:void(0)" onclick="logout()"><i class="fa fa-sign-out"></i> Sign
-                                    Out</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
+@section('content') 
 
     <!-- course area start -->
     <div class="course-area pt-5">
         <div class="container">
-            <div class="row">
-
-                <!-- <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                    <div class="account-cfoinfo">
-                        <div class="cfoaccount">
-                            <ul class="list-unstyled">
-                                <li class="active"><a href="{{ url('student/dashboard') }}"><i class="fa fa-home"
-                                            aria-hidden="true"></i> Dashboard</a></li>
-                                <li><a href="{{ url('student/profile') }}"><i class="fa fa-user" aria-hidden="true"></i>
-                                        Profile</a></li>
-                                <li><a href="{{ url('student/course-lists') }}"><i class="fa fa-history"
-                                            aria-hidden="true"></i> Courses</a></li>
-                                <li><a href="javascript:void(0)" onclick="logout()"><i class="fa fa-sign-out"></i> Sign
-                                        Out</a></li>
-                            </ul>
-                        </div> 
-                    </div> 
-                </div> -->
+            <div class="row"> 
+                 
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
                     <div class="wrap">
 
