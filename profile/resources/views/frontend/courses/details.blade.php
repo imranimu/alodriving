@@ -7,10 +7,10 @@
         <div class="container">
             <div class="breadcrumb-inner">
                 <div class="section-title mb-0">
-                    <h2 class="page-title">Course Single</h2>
+                    <h2 class="page-title">{{ $getCourse->title }}</h2>
                     <ul class="page-list">
                         <li><a href="{{ url('/') }}">Home</a></li>
-                        <li>Course Single</li>
+                        <li>{{ $getCourse->title }}</li>
                     </ul>
                 </div>
             </div>

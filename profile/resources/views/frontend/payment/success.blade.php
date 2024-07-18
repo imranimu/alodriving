@@ -195,6 +195,11 @@
                     </table>
                     <!-- Content End -->
                 </div>
+
+                <div class="col-md-12">
+                    {{-- Course List page --}}
+                    <a href="{{ url('student/course-lists') }}" class="btn btn-primary btn-lg">Start Course</a>
+                </div>
             </div>
         </div>
     </div>
