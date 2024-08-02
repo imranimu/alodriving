@@ -32,22 +32,14 @@
                                         <td class="commonname-td">
                                             Login Info
                                         </td>
-                                        <td class="nameshow-td">
-                                            {{ Auth::user()->email }} </td>
+                                        <td class="nameshow-td">{{ Auth::user()->email }}</td>
                                     </tr>
-
-
                                     <tr>
-                                        <td class="commonname-td">
-
-                                        </td>
+                                        <td class="commonname-td"></td>
                                         <td class="nameshow-td">
                                             <a href="{{ url('student/change-password') }}">Modify my password</a>
                                         </td>
-
-                                    </tr>
-
-
+                                    </tr>  
                                 </tbody>
                             </table>
                         </div>
@@ -55,8 +47,7 @@
 
                     <div class="clearfix"></div>
 
-                    <!-- END OF CONTACT DETAILS SECTION -->
-
+                    <!-- END OF CONTACT DETAILS SECTION --> 
 
                     <div class="contact-details myaccount-contact">
                         <h2>My Details</h2>
@@ -133,7 +124,7 @@
                                         </div>
                                         <div class="col-sm-9">
                                             <input type="text" name="dob" class="form-control postcode-separate"
-                                                placeholder="mm-day-YYYY" value="{{ old('dob') != '' ? old('dob') : Auth::user()->dob }}"
+                                                placeholder="YYYY-mm-day" value="{{ old('dob') != '' ? old('dob') : Auth::user()->dob }}"
                                                 id="datepicker">
                                             @if ($errors->has('dob'))
                                                 <strong>{{ $errors->first('dob') }}</strong>
@@ -259,14 +250,9 @@
                             </div>
                         </div>
 
-                    </div>
-
-
-                    <!-- END OF DELIVERY ADDRESS SECTION -->
-
-
-                </div>
-
+                    </div> 
+                    <!-- END OF DELIVERY ADDRESS SECTION -->  
+                </div> 
             </div>
         </div>
     </div>
@@ -282,7 +268,7 @@
     </style>
 	<script>
         $('#datepicker').datepicker({
-            format: 'mm-dd-yyyy',
+            format: 'yyyy-mm-dd',
         });
     </script>
 @endsection

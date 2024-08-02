@@ -59,10 +59,12 @@
     							@php 
     						        $nextModuleID  = getNextModule($getReuslt->course_id,  $getReuslt->module_id);   
     						    @endphp 
-    							<div class="col-md-6 text-right"> 
-    								<a href="{{ url('student/course/' . $nextModuleID['course_id'] . '/' . $nextModuleID['module_id'] . '/' . $nextModuleID['lesson_id'] . '/1') }}"
-                                    class="btn btn-info btn-sm">Next Module <i class="fa fa-arrow-right"></i></a> 
-    							</div>
+								@if (!blank($nextModuleID))
+									<div class="col-md-6 text-right"> 
+										<a href="{{ url('student/course/' . $nextModuleID['course_id'] . '/' . $nextModuleID['module_id'] . '/' . $nextModuleID['lesson_id'] . '/1') }}"
+										class="btn btn-info btn-sm">Next Module <i class="fa fa-arrow-right"></i></a> 
+									</div>
+								@endif
 							@endif
 						</div>
 						<hr>

@@ -59,8 +59,17 @@ class PaymentController extends Controller
                 'course_id' => $getCourse['course_id'],
                 'title' => $getCourse['title'],
                 'price' => $getCourse['price'],
-                'student_name' => Auth::user()->first_name,
+                'first_name' => Auth::user()->first_name,
+                'last_name' => Auth::user()->last_name,
                 'student_email' => Auth::user()->email,
+                'mobile_no' => Auth::user()->mobile_no,
+                'address1' => Auth::user()->address1,
+                'address2' => Auth::user()->address2,
+                'postcode' => Auth::user()->postcode,
+                'city_town' => Auth::user()->city_town,
+                'country' => Auth::user()->country,
+                'dob' => Auth::user()->dob,
+                'gender' => Auth::user()->gender,
                 'parent_email' => Auth::user()->parent_email,
             ]);
             return redirect('student/course-checkout');
@@ -82,10 +91,12 @@ class PaymentController extends Controller
     public function course_payment_validation(Request $request)
     {
         $arr = [
-            'student_name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'student_email' => 'required|unique:users,email',
             "question"    => "required|array",
             "question.*"  => "required|string",
+            'dob' => 'required|date|before:' . now()->subYears(18)->format('Y-m-d'), 
         ];
 
         if ($request->parent_email != "") {
@@ -100,7 +111,8 @@ class PaymentController extends Controller
                 'title' => $getCourse['title'],
                 'price' => $getCourse['price'],
 				'student_password' => $request->student_password !="" ? $request->student_password : '',
-                'student_name' => Auth::user() != "" ? Auth::user()->first_name : $request->student_name,
+                'first_name' => Auth::user() != "" ? Auth::user()->first_name : $request->first_name,
+                'last_name' => Auth::user() != "" ? Auth::user()->last_name : $request->last_name,
                 'student_email' => Auth::user() != "" ? Auth::user()->email : $request->student_email, 
                 'mobile_no' =>  Auth::user() != "" ? Auth::user()->mobile_no : $request->mobile_no,
                 'address1' =>  Auth::user() != "" ? Auth::user()->address1 : $request->address1,
@@ -110,6 +122,7 @@ class PaymentController extends Controller
                 'country' =>  Auth::user() != "" ? Auth::user()->country : $request->country,
 				'dob' =>  Auth::user() != "" ? Auth::user()->dob : $request->dob,
                 'gender' =>  Auth::user() != "" ? Auth::user()->gender : $request->gender,
+                'parent_email' => Auth::user() != "" ? Auth::user()->parent_email : $request->parent_email,
 				'security_questions' => $request->question,
             ]);
             return redirect('student/course-checkout');
@@ -152,7 +165,8 @@ class PaymentController extends Controller
         $student_id = !blank(Auth::user()) ? Auth::user()->id : 0;
         if (blank(Auth::user())) {
             $arr = [
-                'first_name' => $getCourse['student_name'],
+                'first_name' => $getCourse['first_name'],
+                'last_name' => $getCourse['last_name'],
                 'email' => $getCourse['student_email'],
                 'mobile_no' => $getCourse['mobile_no'],
                 'address1' => $getCourse['address1'],
@@ -162,7 +176,7 @@ class PaymentController extends Controller
                 'country' => $getCourse['country'],
                 'dob' => $getCourse['dob'],
                 'gender' => $getCourse['gender'], 
-                'parent_email' => $getCourse['parent_email'],
+                'parent_email' => $getCourse['parent_email'] != "" ? $getCourse['parent_email'] : "",
                 'is_role' => '2',
                 'password' => bcrypt($getCourse['student_password']),
                 'created_at' => now(),
