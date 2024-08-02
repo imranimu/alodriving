@@ -41,12 +41,21 @@
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
-                                <label for="student_name" class="form-label mb-2">Student Name</label>
-                                <input type="text" id="student_name" class="form-control mb-3"
-                                    placeholder="Enter Student Name" value="{{ old('student_name') }}" name="student_name"
+                                <label for="first_name" class="form-label mb-2">First Name</label>
+                                <input type="text" id="first_name" class="form-control mb-3"
+                                    placeholder="Enter First Name" value="{{ old('first_name') }}" name="first_name"
                                     required="">
-                                @if ($errors->has('student_name'))
-                                    <strong>{{ $errors->first('student_name') }}</strong>
+                                @if ($errors->has('first_name'))
+                                    <strong>{{ $errors->first('first_name') }}</strong>
+                                @endif
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label mb-2">Last Name</label>
+                                <input type="text" id="last_name" class="form-control mb-3"
+                                    placeholder="Enter Last Name" value="{{ old('last_name') }}" name="last_name"
+                                    required="">
+                                @if ($errors->has('last_name'))
+                                    <strong>{{ $errors->first('last_name') }}</strong>
                                 @endif
                             </div>
                             <div class="col-md-6">
@@ -58,8 +67,7 @@
                                 @if ($errors->has('student_email'))
                                     <strong>{{ $errors->first('student_email') }}</strong>
                                 @endif
-                            </div>
-
+                            </div> 
                             <div class="col-md-6">
                                 <label for="mobile_no" class="form-label mb-2">Mobile Number</label>
                                 <input type="text" id="mobile_no" class="form-control mb-3"
@@ -69,23 +77,7 @@
                                 @if ($errors->has('mobile_no'))
                                     <strong>{{ $errors->first('mobile_no') }}</strong>
                                 @endif
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="gender" class="form-label mb-2">Gender</label>
-                                <select name="gender" id="gender" class="form-control">
-                                    <option value="">Select</option>
-                                    <option value="male"{{ old('gender') == 'male' ? 'selected' : '' }}>
-                                        Male
-                                    </option>
-                                    <option value="female"
-                                        {{ old('gender') == 'female' ? 'selected' : '' }}>
-                                        Female</option>
-                                </select>
-                                @if ($errors->has('female'))
-                                    <strong>{{ $errors->first('female') }}</strong>
-                                @endif
-                            </div>
+                            </div> 
 
                             {{-- radio button for Yes/No --}}
 
@@ -109,8 +101,7 @@
                                 @if ($errors->has('is_differently_abled'))
                                     <strong>{{ $errors->first('is_differently_abled') }}</strong>
                                 @endif
-                            </div>
-
+                            </div> 
 
                             <div class="col-md-6">
                                 <label for="dob" class="form-label mb-2">Date of Birth</label>
@@ -123,15 +114,22 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="postcode" class="form-label mb-2">Postcode</label>
-                                <input type="text" name="postcode" class="form-control postcode-separate mb-3"
-                                    id="postcode" placeholder="Zipcode"
-                                    value="{{ old('postcode') }}"
-                                    maxlength="8">
-                                @if ($errors->has('postcode'))
-                                    <strong>{{ $errors->first('postcode') }}</strong>
+                                <label for="gender" class="form-label mb-2">Gender</label>
+                                <select name="gender" id="gender" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="male"{{ old('gender') == 'male' ? 'selected' : '' }}>
+                                        Male
+                                    </option>
+                                    <option value="female"
+                                        {{ old('gender') == 'female' ? 'selected' : '' }}>
+                                        Female</option>
+                                </select>
+                                @if ($errors->has('female'))
+                                    <strong>{{ $errors->first('female') }}</strong>
                                 @endif
                             </div>
+
+                            
 
                             <div class="col-md-12">
                                 <label for="address1" class="form-label mb-2">Address</label>
@@ -152,6 +150,17 @@
                             </div>
 
                             <div class="col-md-6">
+                                <label for="postcode" class="form-label mb-2">Postcode</label>
+                                <input type="text" name="postcode" class="form-control postcode-separate mb-3"
+                                    id="postcode" placeholder="Zipcode"
+                                    value="{{ old('postcode') }}"
+                                    maxlength="8">
+                                @if ($errors->has('postcode'))
+                                    <strong>{{ $errors->first('postcode') }}</strong>
+                                @endif
+                            </div>
+
+                            <div class="col-md-6">
 
                                 <label for="country" class="form-label mb-2">State</label> 
 
@@ -161,13 +170,10 @@
                                 @if ($errors->has('country'))
                                     <strong>{{ $errors->first('country') }}</strong>
                                 @endif
-                            </div>
+                            </div> 
                             
-                            <div class="col-md-12">
-                                <hr>
-                            </div>
 
-							<div class="col-md-12">
+							<div class="col-md-6">
                                 <label for="student_password" class="form-label mb-2">Student Password</label>
                                 <input type="password" id="student_password" class="form-control mb-3"
                                     placeholder="STUDENT PASSWORD" name="student_password"
